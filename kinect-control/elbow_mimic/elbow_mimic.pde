@@ -12,12 +12,14 @@ int elbowServo = 1;
 void setup() {
   size(1920, 1080, P3D);
 
+ //*enables functionalites of kinect package
   kinect = new KinectPV2(this);
   kinect.enableSkeletonColorMap(true);
   kinect.enableColorImg(true);
 
   kinect.init();
   
+  //*arduino stuff?
   arduino = new Arduino(this, Arduino.list()[0], 57600);
   println(Arduino.list()[0]);
   
@@ -27,6 +29,7 @@ void setup() {
 }
 
 void draw() {
+  //*gets images
   image(kinect.getColorImage(), 0, 0, width, height);
 
   ArrayList<KSkeleton> skeletonArray =  kinect.getSkeletonColorMap();
