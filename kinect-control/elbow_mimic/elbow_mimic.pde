@@ -7,7 +7,35 @@ Arduino arduino;
 KinectPV2 kinect;
 Serial port;
 
-int elbowServo = 1;
+//handstate variables
+//If true the humans hand is open if false it is 
+boolean handstate = true;
+
+//If true the robot hand is open if false it is closed.
+boolean robot_handstate = true;
+
+
+//list servos here
+// 0 is temp pin number
+int thumbMicro = 4; //thumb microservo
+int thumbServo = 5; //thumb servo
+int indexServo = 13; //index servo
+int middleServo = 12; // middle servo
+int pinkyServo = 11; // fourth + pinky servo
+
+int elbowServo = 10;
+
+// variable to tell is fingers are open/straight or closed/bent
+boolean thumbMircoOpen = true; 
+// if true thumb microservo is open/straight
+boolean thumbServoOpen = true; 
+// if true thumb servo is open/straight
+boolean indexServoOpen = true; 
+// if true index servo is open/straight
+boolean middleServoOpen = true; 
+// if true middle servo is open/straight
+boolean pinkyServoOpen = true;  
+// if true pinky servo is open/straight
 
 void setup() {
   size(1920, 1080, P3D);
@@ -20,10 +48,13 @@ void setup() {
   kinect.init();
   
   //*arduino stuff?
-  arduino = new Arduino(this, Arduino.list()[0], 57600);
-  println(Arduino.list()[0]);
+  arduino = new Arduino(this, Arduino.list()[2], 57600);
+  println(Arduino.list()[2]);
   
   arduino.pinMode(elbowServo, Arduino.SERVO);
+  arduino.pinMode(indexServo, Arduino.SERVO);
+  
+  arduino.servoWrite(indexServo, 250);
  
   frameRate(60);
 }
@@ -188,10 +219,19 @@ void handState(int handState) {
   switch(handState) {
   case KinectPV2.HandState_Open:
     fill(0, 255, 0);
+    print("open");
+    arduino.servoWrite(indexServo, 250);
+    arduino.servoWrite(middleServo, 40);
+    arduino.servoWrite(indexServo, -90);
     break;
     
   case KinectPV2.HandState_Closed:
     fill(255, 0, 0);
+    print("Closed");
+    handstate = false;
+    arduino.servoWrite(indexServo, 50);
+    arduino.servoWrite(middleServo, 300);
+    arduino.servoWrite(indexServo, 150);
     break;
     
   case KinectPV2.HandState_Lasso:
@@ -208,11 +248,14 @@ void handStateRight(int handState) {
   case KinectPV2.HandState_Open:
     fill(0, 255, 0);
     //port.write(100);
+    print("open");
+    arduino.servoWrite(indexServo, 50);
     break;
     
   case KinectPV2.HandState_Closed:
     fill(255, 0, 0);
     //port.write(101);
+    print("Closed");
     break;
     
   case KinectPV2.HandState_Lasso:
